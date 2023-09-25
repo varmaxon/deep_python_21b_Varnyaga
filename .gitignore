@@ -1,0 +1,6 @@
+.pylintrc
+01/.coverage
+01/.flake8
+.idea
+main.py
+venv
