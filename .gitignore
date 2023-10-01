@@ -1,6 +1,7 @@
 .pylintrc
-01/.coverage
-01/.flake8
+.coverage
+.flake8
 .idea
 main.py
 venv
+__pycache__
