@@ -8,17 +8,17 @@ def mean(k):
                 raise TypeError('the parameter K must be of type integer')
 
             start = time.time()
-            func(arg)
+            func_result = func(arg)
             result = time.time() - start
             mean.time.append(result)
 
             if 0 < len(mean.time) < k:
-                return f"[0, {len(mean.time)})",\
-                    sum(mean.time) / len(mean.time)
+                print(sum(mean.time) / len(mean.time))
 
             if len(mean.time) >= k:
-                return f"[{len(mean.time) - k}, {len(mean.time)})", \
-                    sum(mean.time[len(mean.time) - k: len(mean.time)]) / k
+                print(sum(mean.time[len(mean.time) - k: len(mean.time)]) / k)
+
+            return func_result
 
         return wrapper
 

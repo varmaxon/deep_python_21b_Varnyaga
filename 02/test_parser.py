@@ -17,6 +17,7 @@ class TestParser(unittest.TestCase):
                             keyword_callback=foo_mock)
 
         self.assertEqual(result, 0)
+        self.assertEqual(foo_mock.call_args, mock.call('key1', 'word2'))
 
     def test_parse_json_empty_callback(self):
 
@@ -37,6 +38,7 @@ class TestParser(unittest.TestCase):
                             keyword_callback=foo_mock)
 
         self.assertEqual(result, -1)
+        self.assertEqual(foo_mock.call_count, 0)
 
     def test_parse_json_empty_fields(self):
 
@@ -48,6 +50,7 @@ class TestParser(unittest.TestCase):
                             keyword_callback=foo_mock)
 
         self.assertEqual(result, -1)
+        self.assertEqual(foo_mock.call_count, 0)
 
     def test_parse_json_incorrect_json_type(self):
 
@@ -60,6 +63,7 @@ class TestParser(unittest.TestCase):
                             keyword_callback=foo_mock)
 
         self.assertEqual(result, -1)
+        self.assertEqual(foo_mock.call_count, 0)
 
     def test_parse_json_call_count_1(self):
 
@@ -73,6 +77,7 @@ class TestParser(unittest.TestCase):
 
         self.assertEqual(foo_mock.call_count, 1)
         self.assertEqual(result, 0)
+        self.assertEqual(foo_mock.call_args, mock.call('key1', 'word2'))
 
     def test_parse_json_result_of_calling(self):
 
@@ -86,6 +91,7 @@ class TestParser(unittest.TestCase):
 
         foo_mock.assert_called_with('key1', 'word2')
         self.assertEqual(result, 0)
+        self.assertEqual(foo_mock.call_args, mock.call('key1', 'word2'))
 
     def test_parse_json_call_count_more(self):
 
@@ -99,6 +105,14 @@ class TestParser(unittest.TestCase):
 
         self.assertEqual(foo_mock.call_count, 4)
         self.assertEqual(result, 0)
+
+        expected_callback_args = [
+            mock.call('key1', 'word2'),
+            mock.call('key1', 'word3'),
+            mock.call('key2', 'word2'),
+            mock.call('key2', 'word3')
+        ]
+        self.assertListEqual(sorted(foo_mock.call_args_list), expected_callback_args)
 
     def test_parse_json_not_found_fields(self):
 
@@ -138,6 +152,8 @@ class TestParser(unittest.TestCase):
 
         self.assertEqual(foo_mock.call_count, 1)
         self.assertEqual(result, 0)
+        self.assertEqual(foo_mock.call_args, mock.call('key1', 'word2'))
+
 
     def test_parse_json_same_keywords(self):
 
@@ -151,6 +167,31 @@ class TestParser(unittest.TestCase):
 
         self.assertEqual(foo_mock.call_count, 1)
         self.assertEqual(result, 0)
+        self.assertEqual(foo_mock.call_args, mock.call('key1', 'word2'))
+
+    def test_parse_json_different_register_keywords(self):
+
+        foo_mock = mock.Mock(return_value=None)
+        result = parse_json(json_str='{"key1": "Word1 Word2 word3", '
+                                     '"key2": "word2 word3 word4"}',
+                            required_fields=["key1"],
+                            keywords=["word2"],
+                            keyword_callback=foo_mock)
+
+        self.assertEqual(foo_mock.call_count, 1)
+        self.assertEqual(result, 0)
+        self.assertEqual(foo_mock.call_args, mock.call('key1', 'word2'))
+
+        foo_mock = mock.Mock(return_value=None)
+        result = parse_json(json_str='{"key1": "Word1 word2 word3", '
+                                     '"key2": "word2 word3 word4"}',
+                            required_fields=["key1"],
+                            keywords=["Word2"],
+                            keyword_callback=foo_mock)
+
+        self.assertEqual(foo_mock.call_count, 1)
+        self.assertEqual(result, 0)
+        self.assertEqual(foo_mock.call_args, mock.call('key1', 'word2'))
 
 
 if __name__ == "__main__":
