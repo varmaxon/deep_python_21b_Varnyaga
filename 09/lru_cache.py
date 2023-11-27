@@ -1,5 +1,5 @@
 import argparse
-from my_logging import Logger, StreamLogger, FilterLogger
+import my_logging
 
 
 class DictElement:
@@ -29,7 +29,7 @@ class LRUCache:
         self.__cache_dict = {}
         self.__first = None
         self.__last = None
-        log.logger.debug(
+        logger.debug(
             "Cache %s is created with limit %s",
             self,
             self.__limit
@@ -37,13 +37,13 @@ class LRUCache:
 
     def get(self, key):
         if key not in self.__cache_dict:
-            log.logger.warning(
+            logger.warning(
                 "Command get:\tkey %s not found in cache",
                 key
             )
             return None
 
-        log.logger.info(
+        logger.info(
             "Command get:\tkey %s is found in cache",
             key
         )
@@ -69,7 +69,7 @@ class LRUCache:
             new_el = DictElement(key, value)
             self.__cache_dict[key] = new_el
             self.__push_back(new_el)
-            log.logger.info(
+            logger.info(
                 "Command set:\tnew key %s with value %s",
                 key,
                 value
@@ -78,7 +78,7 @@ class LRUCache:
         else:
             elem = self.__cache_dict[key]
             elem.set_val(value)
-            log.logger.info(
+            logger.info(
                 "Command set:\tvalue with key %s was changed to %s",
                 key,
                 value
@@ -88,7 +88,7 @@ class LRUCache:
     def __set_back(self, elem):
         if self.__last == elem:
             # set the last element
-            log.logger.debug(
+            logger.debug(
                 "Element %s is already the last",
                 elem
             )
@@ -106,7 +106,7 @@ class LRUCache:
         elem.prev = self.__last
         self.__last.next = elem
         self.__last = elem
-        log.logger.debug(
+        logger.debug(
             "Element %s has been successfully moved to the last",
             elem
         )
@@ -119,7 +119,7 @@ class LRUCache:
             self.__last.next = new_el
             self.__last = new_el
 
-        log.logger.debug(
+        logger.debug(
             "Add new element %s to back",
             new_el
         )
@@ -148,12 +148,12 @@ if __name__ == "__main__":
     parser.add_argument("-f", action="store_true")
     args = parser.parse_args()
 
-    log = Logger()
+    logger = my_logging.create_logger()
 
     if args.s:
-        log = StreamLogger()
+        logger = my_logging.create_stream_logger(logger)
 
     if args.f:
-        log = FilterLogger()
+        logger = my_logging.create_filter(logger)
 
     run()

@@ -6,38 +6,38 @@ class MyFilter(logging.Filter):
         return "successfully" not in record.msg
 
 
-class Logger:
-    def __init__(self):
-        self.formatter1 = logging.Formatter(
-            "%(asctime)s\t%(levelname)s\t[file]\t%(message)s"
-        )
-        self.formatter2 = logging.Formatter(
-            "%(asctime)s\t%(levelname)s\t[stdout]\t%(message)s"
-        )
+def create_logger():
+    formatter1 = logging.Formatter(
+        "%(asctime)s\t%(levelname)s\t[file]\t%(message)s"
+    )
 
-        self.file_handler = logging.FileHandler(filename="cache.log", mode="w")
-        self.file_handler.setLevel(logging.INFO)
-        self.file_handler.setFormatter(self.formatter1)
+    file_handler = logging.FileHandler(filename="cache.log", mode="w")
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(formatter1)
 
-        self.logger = logging.getLogger("logger")
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.file_handler)
+    logger = logging.getLogger("logger")
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(file_handler)
+
+    return logger
 
 
-class StreamLogger(Logger):
-    def __init__(self):
-        super().__init__()
+def create_stream_logger(logger):
+    formatter2 = logging.Formatter(
+        "%(asctime)s\t%(levelname)s\t[stdout]\t%(message)s"
+    )
 
-        stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging.DEBUG)
-        stream_handler.setFormatter(self.formatter2)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.DEBUG)
+    stream_handler.setFormatter(formatter2)
 
-        self.logger.addHandler(stream_handler)
+    logger.addHandler(stream_handler)
+
+    return logger
 
 
-class FilterLogger(Logger):
-    def __init__(self):
-        super().__init__()
+def create_filter(logger):
+    for handler in logger.handlers:
+        handler.addFilter(MyFilter())
 
-        for handler in self.logger.handlers:
-            handler.addFilter(MyFilter())
+    return logger
