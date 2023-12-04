@@ -3,20 +3,22 @@ import time
 
 def mean(k):
     def decorator(func):
-        def wrapper(arg):
+        arr_time = []
+
+        def wrapper(arg, *args, **kwargs):
             if not isinstance(k, int):
                 raise TypeError('the parameter K must be of type integer')
 
             start = time.time()
-            func_result = func(arg)
+            func_result = func(arg, *args, **kwargs)
             result = time.time() - start
-            mean.time.append(result)
+            arr_time.append(result)
 
-            if 0 < len(mean.time) < k:
-                print(sum(mean.time) / len(mean.time))
+            if 0 < len(arr_time) < k:
+                print(sum(arr_time) / len(arr_time))
 
-            if len(mean.time) >= k:
-                print(sum(mean.time[len(mean.time) - k: len(mean.time)]) / k)
+            if len(arr_time) >= k:
+                print(sum(arr_time[len(arr_time) - k: len(arr_time)]) / k)
 
             return func_result
 
@@ -25,9 +27,7 @@ def mean(k):
     return decorator
 
 
-mean.time = []
 SLEEP = 0.25
-EPSILON = 0.5
 
 
 @mean(10)

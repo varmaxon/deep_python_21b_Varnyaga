@@ -14,8 +14,11 @@ def parse_json(json_str: str,
     json_doc = json.loads("".join(map(str.lower, json_str)))
 
     keys = json_doc.keys() & required_fields
+
+    keywords = set(map(str.lower, keywords))
+
     for key in keys:
-        values = set(json_doc.get(key).split()) & set(map(str.lower, keywords))
+        values = set(json_doc.get(key).split()) & keywords
         for value in values:
             keyword_callback(key, value)
 
