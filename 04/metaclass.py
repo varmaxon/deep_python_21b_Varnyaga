@@ -12,12 +12,12 @@ class CustomMeta(type):
             else:
                 corrected_dict['custom_' + i] = val
 
-        corrected_dict["__setattr__"] = mcs.new_setattr
+        corrected_dict["__setattr__"] = mcs.__new_setattr__
 
         cls = super().__new__(mcs, name, bases, corrected_dict)
         return cls
 
-    def new_setattr(cls, key, value):
+    def __new_setattr__(cls, key, value):
         """rename attributes in class's __init__ (for object fields)"""
 
         object.__setattr__(cls,
