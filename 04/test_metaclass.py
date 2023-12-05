@@ -13,7 +13,8 @@ class CustomClass(metaclass=CustomMeta):
     def __init__(self, val=99):
         self.val = val
 
-    def line(self):
+    @staticmethod
+    def line():
         return 100
 
     def __str__(self):
@@ -25,6 +26,14 @@ class TestCustomList(unittest.TestCase):
 
     def test_old_attributes(self):
         obj = CustomClass()
+
+        # for class attributes
+        self.assertNotIn('x', CustomClass.__dict__)
+        self.assertNotIn('line', CustomClass.__dict__)
+        self.assertNotIn('val', CustomClass.__dict__)
+        self.assertNotIn('yyy', CustomClass.__dict__)
+
+        # for object attributes
         self.assertFalse(hasattr(obj, 'x'))
         self.assertFalse(hasattr(obj, 'line'))
         self.assertFalse(hasattr(obj, 'val'))
@@ -32,22 +41,43 @@ class TestCustomList(unittest.TestCase):
 
     def test_new_attributes(self):
         obj = CustomClass()
+
+        # for class attributes
+        self.assertIn('custom_x', CustomClass.__dict__)
+        self.assertEqual(CustomClass.custom_x, 50)
+
+        self.assertIn('custom_line', CustomClass.__dict__)
+        self.assertEqual(CustomClass.custom_line(), 100)
+
+        self.assertIn('__str__', CustomClass.__dict__)
+        self.assertEqual(str(obj), "Custom_by_metaclass")
+
+        # for object attributes
         self.assertTrue(hasattr(obj, 'custom_x'))
         self.assertEqual(obj.custom_x, 50)
+
         self.assertTrue(hasattr(obj, 'custom_line'))
         self.assertEqual(obj.custom_line(), 100)
+
         self.assertTrue(hasattr(obj, 'custom_val'))
+        self.assertIn('custom_val', obj.__dict__)
         self.assertEqual(obj.custom_val, 99)
+
         self.assertEqual(str(obj), "Custom_by_metaclass")
 
     def test_not_changed_magic_methods(self):
         obj = CustomClass()
+
+        # for class attributes
+        self.assertIn('__init__', CustomClass.__dict__)
+        self.assertIn('__str__', CustomClass.__dict__)
+        self.assertIn('__setattr__', CustomClass.__dict__)
+        self.assertIn('__dict__', CustomClass.__dict__)
+
+        # for object attributes
         self.assertTrue(hasattr(obj, '__init__'))
         self.assertTrue(hasattr(obj, '__str__'))
-
-        # not explicitly described methods
         self.assertTrue(hasattr(obj, '__setattr__'))
-        self.assertTrue(hasattr(obj, '__delattr__'))
         self.assertTrue(hasattr(obj, '__dict__'))
 
     def test_dynamic_fields(self):
