@@ -7,7 +7,7 @@ class CustomMeta(type):
     def __new__(mcs, name, bases, dct):
         corrected_dict = {}
         for i, val in dct.items():
-            if i.startswith('__'):
+            if i.startswith('__') and i.endswith('__'):
                 corrected_dict[i] = val
             else:
                 corrected_dict['custom_' + i] = val
@@ -21,5 +21,5 @@ class CustomMeta(type):
         """rename attributes in class's __init__ (for object fields)"""
 
         object.__setattr__(cls,
-                           "custom_" + key if not key[:2] == "__" else key,
+                           "custom_" + key if (not key.startswith('__')) and (not key.endswith('__')) else key,
                            value)
